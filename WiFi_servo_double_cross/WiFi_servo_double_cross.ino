@@ -1,9 +1,8 @@
 /*
-  Implementation for For WiFi control of points by UDP messages sent from modified DCC++EX command station
+  Implementation for For WiFi control of points by UDP messages sent from UDP transmitter conected to DCC-EX
 
   Change log:
-  2023-02-05   ver 1.0
-  2024-07-27   ver 2.0 For one esp8266 per turnout
+  2024-12-29   ver 1.0 For one esp8266 controlling four servos in one double slip points turnout
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
