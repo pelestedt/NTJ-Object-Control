@@ -2,8 +2,7 @@
   Implementation for For WiFi control of points by UDP messages sent from modified DCC++EX command station
 
   Change log:
-  2023-02-05   ver 1.0
-  2024-07-27   ver 2.0 For one esp8266 per turnout
+  2025-01-03   ver 1.0 
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -43,7 +42,7 @@ void setup() {
   pinMode(Zeropos, INPUT_PULLUP);
   pinMode(CHA, INPUT_PULLUP);  //Encoder channel A
   pinMode(CHB, INPUT_PULLUP);  //Encoder channel B
-  attachInterrupt(CHA, ISR, RISING);
+  attachInterrupt(digitalPinToInterrupt(CHA), ISR, RISING);
   attachInterrupt(digitalPinToInterrupt(Zeropos), zeroISR, FALLING);
   analogWriteFreq(10000);
 
@@ -164,7 +163,7 @@ void setup() {
   //initiera vändskivans position
   Kalibrera();
   Webserver.begin();
-  delay(2000);
+  //delay(2000);
   //set_tablepos = 3000;
 }
 
@@ -271,15 +270,22 @@ ICACHE_RAM_ATTR void ISR() {
 
 
 ICACHE_RAM_ATTR void zeroISR() {
-  if (0 == kalibreringsfas && Direction == Medurs) {
-    if (master_count > 5000) {
-      
-      if (master_count >= fullturn){ master_count = 0;
-      detachInterrupt(digitalPinToInterrupt(Zeropos));
-      Serial.println("nollställt helvarv");}
+  if (0 == kalibreringsfas) {
+    //Serial.print("Zeropos passerad ");Serial.print(Direction);Serial.print(" / ");Serial.println(master_count);
+    if (Direction == Medurs) {
+      if (master_count > 5000) {
+        master_count = -1 * (padellength / 2);
+        Serial.println("nollställt helvarv positiv riktning");
+      }
     }
-    Serial.println(micros());
+    if (Direction == Moturs) {
+      if (master_count < 5000) {
+        Serial.println("nollställt helvarv negativ riktning");
+        master_count = fullturn + (padellength / 2);
+      }
+    }
   }
+
 
   if (1 == seekzero) {
     master_count = 0;
@@ -297,8 +303,7 @@ ICACHE_RAM_ATTR void zeroISR() {
     Serial.println("sz 3");
   }
   if (3 == seekzero && currentdir == REW && master_count < 2000) {
-    master_count = fullturn + paddlelength;
+    master_count = fullturn + padellength;
     Serial.println("neg sz 3");
   }
-  
 }

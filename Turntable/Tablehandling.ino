@@ -2,19 +2,23 @@ void Tablehandling() {
   // Hitta vilken position vändskivan skall ha
   // faktiskt läge fins i master_count
   // Önskat läge finns i set_tablepos
-//Serial.println(Lastrotation);
+  //Serial.println(Lastrotation);
   if (set_tablepos != master_count) {
     //räkna ut hur många pulser det tar att rotera till ny position
     //digitalWrite(Warninglamp, HIGH);
     distance = set_tablepos - master_count;
     distance = abs(distance);
-    if(distance<2){
-    Serial.print("Distans ");
-        Serial.print(distance);
-        Serial.print(" / ");
-        Serial.print(master_count);Serial.print(" / ");Serial.println(set_tablepos);
-        }
-        //Serial.print(" / ");
+/*
+    if (distance < 2) {
+      Serial.print("Distans ");
+      Serial.print(distance);
+      Serial.print(" / ");
+      Serial.print(master_count);
+      Serial.print(" / ");
+      Serial.println(set_tablepos);
+    }
+    //Serial.print(" / ");
+    */
     //räkna ut vilket håll bordet skall rotera och hur många pulser det är kvar att rotera
     if (set_tablepos > master_count && distance < halfturn && distance > 100) {
       Rotation = 1;
