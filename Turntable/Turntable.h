@@ -39,6 +39,7 @@ byte standstill=0;
 
 #define Motorpolaritet 300
 #define Minpwm 310
+#define Padel 320
 
 
 String inputString = "";         // a String to hold incoming data

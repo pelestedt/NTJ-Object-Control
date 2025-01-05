@@ -86,6 +86,7 @@ boolean configmode = false;
 int Inaddr;
 String Configuration;
 byte CurveDirection = 0;
+int padellength=162;
 
 //getUDPdata declarations
 unsigned int localPort = 8888;  // local port to listen on
@@ -115,7 +116,7 @@ int port = 44;
 
 
 #define Zeropos D4
-#define creepspeed 8000  //micro seconds between pulses
+#define creepspeed 6000  //micro seconds between pulses
 #define slowspeed 4000
 #define halfspeed 3000
 #define mediumspeed 2000
@@ -144,8 +145,9 @@ byte standstill = 0;
 byte minpwm = 70;  //lägsta värde för motorutstyrning
 byte currentdir = 0;
 long prelcount = 0;
-long fullturn = 10692; //Pulses for one rev of turntable, is gear ratio * 10692 (10692 is #pulses for one rev of motor)
-int paddlelength;
+//long fullturn = 10692; //Pulses for one rev of turntable, is gear ratio * 10692 (10692 is #pulses for one rev of motor)
+long fullturn = 10652; //Pulses for one rev of turntable, is gear ratio * 10692 (10692 is #pulses for one rev of motor)
+//int paddlelength;
 long distance;
 long halfturn = 5346;
 byte Rotation;
@@ -175,7 +177,7 @@ int Track = 0;
 
 const PROGMEM long position[10][3] = 
 {
-  { 100, 1, 5346 },
+  { 100, 200, 5546 },
   { 101, 1336, 6682 },
   { 102, 2673, 8019 },
   { 103, 3118, 8464 },

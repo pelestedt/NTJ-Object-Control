@@ -53,8 +53,17 @@ void Kalibrera() {
   //kryp famåt till nollpunkten
   setspeed = creepspeed;
 
-  Serial.println("startar kryp framåt till givaren, ");
-  seekzero = 1;
+  Serial.println("startar kryp framåt förbi givaren, ");
+  seekzero = 0;
+  kalibreringsfas = 0;
+unsigned long zerotid = millis() + 5000;  //sök i fem sekunder
+  while (millis() < zerotid) {
+    Speedhandling(setspeed);
+     }
+setspeed= 0;
+
+
+/*
   while (digitalRead(Zeropos) == LOW) {
     Speedhandling(setspeed);
     delay(1);
@@ -65,7 +74,13 @@ void Kalibrera() {
     Speedhandling(setspeed);
     delay(1);
   }
+  
   Serial.println("nollpos hittad kalibrering klar");
+  master_count= (padellength / 2)-master_count;
   set_tablepos = master_count;
   kalibreringsfas = 0;
-}  //kalibrering färdig
+  */
+  set_tablepos = master_count;
+  Serial.println("Nollpos passerad, kalibrering klar");
+  }  //kalibrering färdig
+
