@@ -1,5 +1,5 @@
 /*
-  Implementation for For WiFi control of points by UDP messages sent from modified DCC++EX command station
+  Implementation for For WiFi control of turntable by UDP messages sent UDP transmitter connected to DCC++EX command station
 
   Change log:
   2025-01-03   ver 1.0 
