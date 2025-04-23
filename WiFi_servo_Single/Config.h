@@ -33,10 +33,9 @@ const char* PARAM_INPUT_2 = "Curve direction";
 int VxID;
 String HostID;
 
-//String STASSID = "NTJ";
-//String STAPSK = "NTJNTJ01";
-String STASSID = "Lundsholm2G";
-String STAPSK = "CrUtu4rA";
+String STASSID = "NTJ";
+String STAPSK = "NTJNTJ01";
+
 
 int packetSize = 0;
 String Configstring = "";  // a String to hold incoming data
