@@ -33,8 +33,10 @@ const char* PARAM_INPUT_2 = "Curve direction";
 int VxID;
 String HostID;
 
-String STASSID = "NTJ";
-String STAPSK = "NTJNTJ01";
+//String STASSID = "NTJ";
+//String STAPSK = "NTJNTJ01";
+String STASSID = "Lundsholm2G";
+String STAPSK = "CrUtu4rA";
 
 int packetSize = 0;
 String Configstring = "";  // a String to hold incoming data
@@ -48,9 +50,9 @@ unsigned int localPort = 8888;  // local port to listen on
 String inputString = "";        // a String to hold incoming data
 
 // buffer for sending data
-char packetBuffer[20 + 1];  //buffer to hold incoming packet,
+//char packetBuffer[20 + 1];  //buffer to hold incoming packet,
 char UDPincoming[20 + 1];   //buffer to hold incoming packet,
-boolean UDPavailable;
+//boolean UDPavailable;
 WiFiUDP Udp;
 
 int port = 44;

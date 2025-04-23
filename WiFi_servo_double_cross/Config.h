@@ -4,6 +4,7 @@
 
 const char* PARAM_INPUT_1 = "DCCaddress";
 const char* PARAM_INPUT_2 = "Curve direction";
+const char* PARAM_INPUT_3 = "Vxpos";
 
 // HTML web page to handle 2 input fields 
 
@@ -19,10 +20,14 @@ const char* PARAM_INPUT_2 = "Curve direction";
   <form action="/get">
     DCC address: <input type="text" name="DCCaddress">
    <input type="submit" value="Submit">
-  </form><br>
+  </form><br><br>
   <form action="/get">
     Left or Right: <input type="text" name="Curve direction">
     <input type="submit" value="Submit">
+  </form><br><br>
+  <form action="/get">
+    Vxpos 0-1-2-3:<input type="text" name="Vxpos">
+   <input type="submit" value="Submit">
   </form><br>
  </body></html>)rawliteral";
 
@@ -62,8 +67,8 @@ int port = 44;
 //Define the outpust on the Arduino that controls the outputs setting the points
 #define Servo1 D1
 #define Servo2 D2
-#define Servo3 D3
-#define Servo4 D4
+//#define Servo3 D3
+//#define Servo4 D4
 #define InitialDCCaddress 999
 
 //Main loop declarationsInitialDCCaddress
@@ -80,12 +85,12 @@ byte anglePos1;
 byte setPos2 = 0 ;
 byte actualPos2= 0 ;
 byte anglePos2;
-byte setPos3 = 0 ;
-byte actualPos3= 0 ;
-byte anglePos3;
-byte setPos4 = 0 ;
-byte actualPos4= 0 ;
-byte anglePos4;
+//byte setPos3 = 0 ;
+//byte actualPos3= 0 ;
+//byte anglePos3;
+//byte setPos4 = 0 ;
+//byte actualPos4= 0 ;
+//byte anglePos4;
 
 bool stringComplete = false;  // whether the string is complete
 byte pointsID = VxID;
@@ -93,7 +98,7 @@ byte pointsID = VxID;
 unsigned long answer = 0;
 String Seq;
 byte restarted = 0;
-unsigned long attstarttime = 0;
+//unsigned long attstarttime = 0;
 byte att = 0;
 
 WiFiServer server(44);

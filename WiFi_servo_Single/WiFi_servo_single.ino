@@ -1,9 +1,8 @@
 /*
-  Implementation for For WiFi control of points by UDP messages sent from modified DCC++EX command station
+  Implementation for For WiFi control of points by UDP messages sent from NTJ UDP Transmitter connected to DCC-EX
 
   Change log:
-  2023-02-05   ver 1.0
-  2024-07-27   ver 2.0 For one esp8266 per turnout
+  2024-12-29   ver 1.0 For one esp8266 per turnout
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -44,6 +43,7 @@ void setup() {
   HostID = "Vx" + String(VxID);  //create Hostname from read ID
   WiFi.setHostname(HostID.c_str());
   ArduinoOTA.setHostname(HostID.c_str());
+  Serial.println(HostID.c_str());
   WiFi.mode(WIFI_STA);
   WiFi.begin(STASSID, STAPSK);
 
@@ -141,6 +141,7 @@ void setup() {
   points1.write(180);
   delay(1000);
   points1.detach();
+  Serial.println("Initialisering klar");
 }
 
 void loop() {

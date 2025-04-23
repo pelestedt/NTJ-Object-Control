@@ -1,8 +1,9 @@
 /*
-  Implementation for For WiFi control of points by UDP messages sent from UDP transmitter conected to DCC-EX
+  Implementation for For WiFi control of points by UDP messages sent from NTJ UDP Transmitter connected to DCC-EX
 
   Change log:
-  2024-12-29   ver 1.0 For one esp8266 controlling four servos in one double slip points turnout
+  2024-12-29   ver 1.0 For one esp8266 per 4 SERVOS IN A DOUBLE SLIP POINTS turnout
+  
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -17,20 +18,23 @@
 */
 
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include "Config.h"
 #include <WiFiClient.h>
 #include <Servo.h>
 #include <ArduinoOTA.h>
-#include <Dns.h>
+//#include <Dns.h>
 #include <ESP_EEPROM.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
 Servo points1;  // create servo object to control a servo
 Servo points2;  // create servo object to control a servo
+/*
 Servo points3;  // create servo object to control a servo
 Servo points4;  // create servo object to control a servo
+*/
 AsyncWebServer Webserver(80);
 
 void setup() {
@@ -46,6 +50,7 @@ void setup() {
   HostID = "Vx" + String(VxID);  //create Hostname from read ID
   WiFi.setHostname(HostID.c_str());
   ArduinoOTA.setHostname(HostID.c_str());
+  Serial.println(HostID.c_str());
   WiFi.mode(WIFI_STA);
   WiFi.begin(STASSID, STAPSK);
 
@@ -56,7 +61,7 @@ void setup() {
   Udp.begin(localPort);
   Serial.println("");
   Serial.println("Startat");
-  attstarttime = millis();
+  //attstarttime = millis();
 
   //ArduinoOTA.setHostname(HostID);
   ArduinoOTA.setPassword("NTJNTJ01");
@@ -128,6 +133,26 @@ void setup() {
         CurveDirection = 0;
       }
       EEPROM.commit();
+    } else if (request->hasParam(PARAM_INPUT_3)) {
+      inputMessage = request->getParam(PARAM_INPUT_3)->value();
+      inputParam = PARAM_INPUT_3;
+      if (inputMessage.startsWith("0")) {
+        setPos1 = 1;
+        setPos2 = 1;
+      }
+      if (inputMessage.startsWith("1")) {
+        setPos1 = 0;
+        setPos2 = 1;
+      }
+      if (inputMessage.startsWith("2")) {
+        setPos1 = 0;
+        setPos2 = 0;
+      }
+      if (inputMessage.startsWith("3")) {
+        setPos1 = 1;
+        setPos2 = 0;
+      }
+
     } else {
       inputMessage = "No message sent";
       inputParam = "none";
@@ -139,25 +164,17 @@ void setup() {
   Webserver.begin();
   EEPROM.get(10, CurveDirection);
   setPos = 1;
+
+/*
   points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
   points1.write(180);
-  delay(1000);
-  points2.detach();
+  delay(400);
+  points1.detach();
   points2.attach(Servo2, 500, 2400);  // attaches the servo on pin D1 to the servo object
   points2.write(180);
-  delay(1000);
-  points3.detach();
-  points3.attach(Servo3, 500, 2400);  // attaches the servo on pin D1 to the servo object
-  points3.write(180);
-  delay(1000);
-  points4.detach();
-  points4.attach(Servo4, 500, 2400);  // attaches the servo on pin D1 to the servo object
-  points4.write(180);
-  delay(1000);
-  points1.detach();
+  delay(400);
   points2.detach();
-  points3.detach();
-  points4.detach();
+  */
 }
 
 void loop() {
@@ -202,51 +219,61 @@ fpos:
 qend:
     id = Sid.toInt();
     pos = Spos.toInt();
-    points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
-    attstarttime = millis();
+    //points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
+    //attstarttime = millis();
   }
 bailout:
   answer = 0;
   if (VxID == id) {
-    points1.attach(Servo1, 500, 2400);  // attach the servo to the servo object
-    points2.attach(Servo2, 500, 2400);  // attach the servo to the servo object
-    points3.attach(Servo3, 500, 2400);  // attach the servo to the servo object
-    points4.attach(Servo4, 500, 2400);  // attach the servo to the servo object
-    setPos = pos;
-    if (CurveDirection == 1) setPos = 1 - setPos;
-    if (0 == setPos) {
-      setPos1 = 0;
-      setPos2 = 0;
-      setPos3 = 0;
-      setPos4 = 0;
-    } else {
+    if (0 == pos) {
       setPos1 = 1;
       setPos2 = 1;
-      setPos3 = 1;
-      setPos4 = 1;
     }
-
-    answer = Seq.toInt();
-    /* Serial.print("id= ");
-    Serial.print(id);
-    Serial.print("  pos= ");
-    Serial.print(pos);*/
-    if (answer > 0) {
-      // IPAddress broadCast = WiFi.localIP();
-      // broadCast[3] = 255;
-      Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-      //Udp.beginPacket(broadCast, 8888);
-      Udp.print(answer);
-      Udp.endPacket();
-      Serial.print("  Skickat svar: ");
-      Serial.println(answer);
-      answer = 0;
-      id = 0;
+    if (1 == pos) {
+      setPos1 = 0;
+      setPos2 = 1;
+    }
+  }
+  if (VxID == id + 1) {
+    if (0 == pos) {
+      setPos1 = 0;
+      setPos2 = 0;
+    }
+    if (1 == pos) {
+      setPos1 = 1;
+      setPos2 = 0;
     }
   }
 
+  //setPos = pos;
+  //if (CurveDirection == 1) setPos = 1 - setPos;
+  //if (0 == setPos) {
+  //setPos1 = 0;
+  //setPos2 = 0;
+  // } else {
+  //  setPos1 = 1;
+  //  setPos2 = 1;
+  //  }
+
+  answer = Seq.toInt();
+  /* Serial.print("id= ");
+    Serial.print(id);
+    Serial.print("  pos= ");
+    Serial.print(pos);*/
+  if (answer > 0) {
+    // IPAddress broadCast = WiFi.localIP();
+    // broadCast[3] = 255;
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+    //Udp.beginPacket(broadCast, 8888);
+    Udp.print(answer);
+    Udp.endPacket();
+    Serial.print("  Skickat svar: ");
+    Serial.println(answer);
+    answer = 0;
+    id = 0;
+  }
   //Do timebased repetition of points movement
-  if (millis() - 20 >= last25run) {
+  if (millis() - 25 >= last25run) {
     last25run = millis();
     every25ms();
   }
