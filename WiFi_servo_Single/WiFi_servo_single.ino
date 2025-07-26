@@ -26,6 +26,9 @@
 #include <ESP_EEPROM.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include "gluedebug.h"
+
+String Programversion = "Ver 1.1 2500704";  //Curenmt software version
 
 Servo points1;  // create servo object to control a servo
 AsyncWebServer Webserver(80);
@@ -43,7 +46,6 @@ void setup() {
   HostID = "Vx" + String(VxID);  //create Hostname from read ID
   WiFi.setHostname(HostID.c_str());
   ArduinoOTA.setHostname(HostID.c_str());
-  Serial.println(HostID.c_str());
   WiFi.mode(WIFI_STA);
   WiFi.begin(STASSID, STAPSK);
 
@@ -54,10 +56,9 @@ void setup() {
   Udp.begin(localPort);
   Serial.println("");
   Serial.println("Startat");
-  attstarttime = millis();
 
   //ArduinoOTA.setHostname(HostID);
-  ArduinoOTA.setPassword("NTJNTJ01");
+  ArduinoOTA.setPassword(OTApassword);
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH) {
@@ -111,6 +112,7 @@ void setup() {
       int DCCa = inputMessage.toInt();
       EEPROM.put(0, DCCa);
       EEPROM.commit();
+      ESP.reset();
     }
     // GET input2 value on <ESP_IP>/get?input2=<inputMessage>
     else if (request->hasParam(PARAM_INPUT_2)) {
@@ -137,11 +139,15 @@ void setup() {
   Webserver.begin();
   EEPROM.get(10, CurveDirection);
   setPos = 1;
-  points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
-  points1.write(180);
-  delay(1000);
-  points1.detach();
-  Serial.println("Initialisering klar");
+  if (999 = VxID) {
+    points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
+    points1.write(180);
+    delay(5000);
+    points1.write(0);
+    delay(5000);
+    points1.write(180);
+    points1.detach();
+  }
 }
 
 void loop() {
@@ -186,8 +192,6 @@ fpos:
 qend:
     id = Sid.toInt();
     pos = Spos.toInt();
-    points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
-    attstarttime = millis();
   }
 bailout:
   answer = 0;

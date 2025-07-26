@@ -4,7 +4,6 @@
 
 const char* PARAM_INPUT_1 = "DCCaddress";
 const char* PARAM_INPUT_2 = "Curve direction";
-const char* PARAM_INPUT_3 = "Vxpos";
 
 // HTML web page to handle 2 input fields 
 
@@ -20,14 +19,10 @@ const char* PARAM_INPUT_3 = "Vxpos";
   <form action="/get">
     DCC address: <input type="text" name="DCCaddress">
    <input type="submit" value="Submit">
-  </form><br><br>
+  </form><br>
   <form action="/get">
     Left or Right: <input type="text" name="Curve direction">
     <input type="submit" value="Submit">
-  </form><br><br>
-  <form action="/get">
-    Vxpos 0-1-2-3:<input type="text" name="Vxpos">
-   <input type="submit" value="Submit">
   </form><br>
  </body></html>)rawliteral";
 
@@ -98,7 +93,7 @@ byte pointsID = VxID;
 unsigned long answer = 0;
 String Seq;
 byte restarted = 0;
-//unsigned long attstarttime = 0;
+unsigned long attstarttime = 0;
 byte att = 0;
 
 WiFiServer server(44);

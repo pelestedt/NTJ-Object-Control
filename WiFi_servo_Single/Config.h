@@ -1,6 +1,17 @@
+
 /*
    Config.h
 */
+
+//Define the outpust on the Arduino that controls the outputs setting the points
+#define Servo1 D1              //Digital output to control servo
+#define InitialDCCaddress 999  //DCC address assigned to controller by default
+String STASSID = "NTJ";        //Your network name (SSID)
+String STAPSK = "NTJNTJ01";    //Network password
+const char* OTApassword = "NTJNTJ01";     //Password to update software OTA
+
+
+
 
 const char* PARAM_INPUT_1 = "DCCaddress";
 const char* PARAM_INPUT_2 = "Curve direction";
@@ -33,8 +44,6 @@ const char* PARAM_INPUT_2 = "Curve direction";
 int VxID;
 String HostID;
 
-String STASSID = "NTJ";
-String STAPSK = "NTJNTJ01";
 
 
 int packetSize = 0;
@@ -57,20 +66,12 @@ WiFiUDP Udp;
 int port = 44;
 
 
-//define points ID in DCC++EX, the number that represents the points on this controller
-
-
-//Define the outpust on the Arduino that controls the outputs setting the points
-#define Servo1 D1
-#define InitialDCCaddress 999
-
 //Main loop declarationsInitialDCCaddress
 unsigned long last25run = 0;
 int id = 9999;
 String Sid = "256";
 int pos = 0;
 String Spos = "0";
-//byte VXID = VxID;
 byte setPos = 0 ;
 byte actualPos= {0 };
 bool stringComplete = false;  // whether the string is complete
@@ -79,8 +80,7 @@ byte anglePos;
 unsigned long answer = 0;
 String Seq;
 byte restarted = 0;
-unsigned long attstarttime = 0;
-byte att = 0;
+
 
 WiFiServer server(44);
 WiFiClient client;

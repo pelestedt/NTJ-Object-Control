@@ -3,10 +3,9 @@ void every25ms() {
   // code to be repeated every 25ms
 
 
-  // hantera servo 1
+// hantera servo 1
   if (setPos1 != actualPos1) {
-    points1.attach(Servo1, 500, 2400);  // attach the servo to the servo object
-    actualPos1 = 20;                    //set position to undefined
+    actualPos1 = 20;  //set position to undefined
     if (0 == setPos1) {
       anglePos1--;
     }
@@ -24,11 +23,9 @@ void every25ms() {
     points1.detach();
   }
 
-  // hantera servo 2
+// hantera servo 2
   if (setPos2 != actualPos2) {
-    if (setPos1 != actualPos1) { goto skip; }
-    points2.attach(Servo2, 500, 2400);  // attach the servo to the servo object
-    actualPos2 = 20;                    //set position to undefined
+    actualPos2 = 20;  //set position to undefined
     if (0 == setPos2) {
       anglePos2--;
     }
@@ -37,7 +34,6 @@ void every25ms() {
     }
     points2.write(anglePos2);
   }
-  skip:
   if (0 == anglePos2) {
     actualPos2 = 0;
     points2.detach();
@@ -47,7 +43,7 @@ void every25ms() {
     points2.detach();
   }
 
-  /*
+/*
 // hantera servo 3
   if (setPos3 != actualPos3) {
     actualPos3 = 20;  //set position to undefined
@@ -88,4 +84,5 @@ void every25ms() {
     points4.detach();
   }
 */
+
 }
