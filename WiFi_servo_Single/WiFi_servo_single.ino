@@ -3,6 +3,7 @@
 
   Change log:
   2024-12-29   ver 1.0 For one esp8266 per turnout
+  2025-07-30   ver 1.1 div förbättringar
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,7 +27,7 @@
 #include <ESP_EEPROM.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include "gluedebug.h"
+//#include "gluedebug.h"
 
 String Programversion = "Ver 1.1 2500704";  //Curenmt software version
 
