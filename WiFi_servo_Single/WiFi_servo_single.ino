@@ -139,7 +139,7 @@ void setup() {
   Webserver.begin();
   EEPROM.get(10, CurveDirection);
   setPos = 1;
-  if (999 = VxID) {
+  if (999 == VxID) {
     points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
     points1.write(180);
     delay(5000);
