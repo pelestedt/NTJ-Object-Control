@@ -3,48 +3,6 @@
    Config.h
 */
 
-//Define the outpust on the Arduino that controls the outputs setting the points
-#define Servo1 D1              //Digital output to control servo
-#define InitialDCCaddress 999  //DCC address assigned to controller by default
-String STASSID = "NTJ";        //Your network name (SSID)
-String STAPSK = "NTJNTJ01";    //Network password
-const char* OTApassword = "NTJNTJ01";     //Password to update software OTA
-
-
-
-
-const char* PARAM_INPUT_1 = "DCCaddress";
-const char* PARAM_INPUT_2 = "Curve direction";
-
-// HTML web page to handle 2 input fields 
-
- const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html><head>
-  <title>ESP Input Form</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head><body>
-  <br>
-  <br>
-  <br>
-  <br>
-  <form action="/get">
-    DCC address: <input type="text" name="DCCaddress">
-   <input type="submit" value="Submit">
-  </form><br>
-  <form action="/get">
-    Left or Right: <input type="text" name="Curve direction">
-    <input type="submit" value="Submit">
-  </form><br>
- </body></html>)rawliteral";
-
-//void notFound(AsyncWebServerRequest* request) {   request->send(404, "text/plain", "Not found");}
-//Node configuration
-
-//#define VxID  999  //DCC address 
-int VxID;
-String HostID;
-
-
 
 int packetSize = 0;
 String Configstring = "";  // a String to hold incoming data
@@ -75,7 +33,11 @@ String Spos = "0";
 byte setPos = 0 ;
 byte actualPos= {0 };
 bool stringComplete = false;  // whether the string is complete
-byte pointsID = VxID;
+
+//#define VxID  999  //DCC address 
+int VxID;
+String HostID;
+//byte pointsID = VxID;
 byte anglePos;
 unsigned long answer = 0;
 String Seq;
@@ -84,5 +46,56 @@ byte restarted = 0;
 
 WiFiServer server(44);
 WiFiClient client;
+//Define the outpust on the Arduino that controls the outputs setting the points
+#define Servo1 D1              //Digital output to control servo
+#define InitialDCCaddress 999  //DCC address assigned to controller by default
+String STASSID = "NTJ";        //Your network name (SSID)
+String STAPSK = "NTJNTJ01";    //Network password
+const char* OTApassword = "NTJNTJ01";     //Password to update software OTA
+
+const char* PARAM_INPUT_1 = "DCCaddress";
+const char* PARAM_INPUT_2 = "Curve direction";
+
+// HTML web page to handle 2 input fields 
+
+ const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html><head>
+  <title>ESP Input Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+  <br>
+  <br>
+  Nuvarande DCC-adress: %A1%<br>
+  <br>
+  <form action="/get">
+    Ny DCC address: <input type="text" name="DCCaddress">
+   <input type="submit" value="Submit">
+  </form><br>
+  <form action="/get">
+  <br>
+  Kurvriktning L(eft) eller R(ight), Nuvarande riktning %R1% <br>
+  <br>
+    Left or Right: <input type="text" name="Curve direction">
+    <input type="submit" value="Submit">
+  </form><br>
+ </body></html>)rawliteral";
+
+ 
+
+//void notFound(AsyncWebServerRequest* request) {   request->send(404, "text/plain", "Not found");}
+//Node configuration
+
+
+// Replaces placeholder with stored values
+String processor(const String& var) {
+String parameter="123";
+String direction="Right";
+if(0==CurveDirection)direction="Right";
+if(1==CurveDirection)direction="Left";
+if (var == "A1"){parameter= String(VxID);return parameter;}
+if (var == "R1"){parameter= String(direction);return parameter;}
+return String();
+}
+
 
  

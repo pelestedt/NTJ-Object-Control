@@ -29,7 +29,7 @@
 #include <ESPAsyncWebServer.h>
 //#include "gluedebug.h"
 
-String Programversion = "Ver 1.1 2500704";  //Curenmt software version
+String Programversion = "Ver 2.2 250821";  //Curenmt software version
 
 Servo points1;  // create servo object to control a servo
 AsyncWebServer Webserver(80);
@@ -98,7 +98,7 @@ void setup() {
 
   // Send web page with input fields to client
   Webserver.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-    request->send_P(200, "text/html", index_html);
+    request->send_P(200, "text/html", index_html, processor);
   });
 
   // Send a GET request to <ESP_IP>/get?input1=<inputMessage>
@@ -113,7 +113,7 @@ void setup() {
       int DCCa = inputMessage.toInt();
       EEPROM.put(0, DCCa);
       EEPROM.commit();
-      ESP.reset();
+      //ESP.reset();
     }
     // GET input2 value on <ESP_IP>/get?input2=<inputMessage>
     else if (request->hasParam(PARAM_INPUT_2)) {
@@ -135,6 +135,7 @@ void setup() {
     }
     //Serial.println(inputMessage);
     request->send(200, "text/html", "The parameter " + inputParam + " has been set to: " + inputMessage + "<br><a href=\"/\">Return to Home Page</a>");
+    ESP.reset();
   });
   //Webserver.onNotFound(notFound);
   Webserver.begin();
@@ -143,10 +144,16 @@ void setup() {
   if (999 == VxID) {
     points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
     points1.write(180);
-    delay(5000);
+    delay(3000);
     points1.write(0);
-    delay(5000);
+    delay(3000);
     points1.write(180);
+ delay(3000);
+    points1.write(0);
+    delay(3000);
+    points1.write(180);
+delay(3000);
+
     points1.detach();
   }
 }
