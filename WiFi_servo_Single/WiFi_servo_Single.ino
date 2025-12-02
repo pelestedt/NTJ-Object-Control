@@ -1,8 +1,9 @@
 /*
-  Implementation for For WiFi control of SEMAPHORES by UDP messages sent from NTJ UDP Transmitter connected to DCC-EX
+  Implementation for For WiFi control of points by UDP messages sent from NTJ UDP Transmitter connected to DCC-EX
 
   Change log:
-  2025-11-19   ver 1.0 For one esp8266 per SEMAPHORE
+  2024-12-29   ver 1.0 For one esp8266 per turnout
+  2025-07-30   ver 1.1 div förbättringar
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,30 +27,24 @@
 #include <ESP_EEPROM.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include "gluedebug.h"
-#include <Adafruit_NeoPixel.h>
+//#include "gluedebug.h"
 
-String Programversion = "Ver 1.1 251202";  //Curenmt software version
+String Programversion = "Ver 2.2 250821";  //Curenmt software version
 
-Servo wing1;  // create servo object to control a servo
-Servo wing2;  // create servo object to control a servo
+Servo points1;  // create servo object to control a servo
 AsyncWebServer Webserver(80);
-Adafruit_NeoPixel pixels(3, D3, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(115200);
   Serial.println("");
-  Serial.println(Programversion);
   EEPROM.begin(50);
-  EEPROM.get(0, SigID);
-  pixels.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
-  if (0 == SigID) {
+  EEPROM.get(0, VxID);
+  if (0 == VxID) {
     EEPROM.put(0, InitialDCCaddress);
     EEPROM.commit();
   }
-  EEPROM.get(0, SigID);
-  HostID = "Sig" + String(SigID);  //create Hostname from read ID
-  Serial.println(HostID.c_str());
+  EEPROM.get(0, VxID);
+  HostID = "Vx" + String(VxID);  //create Hostname from read ID
   WiFi.setHostname(HostID.c_str());
   ArduinoOTA.setHostname(HostID.c_str());
   WiFi.mode(WIFI_STA);
@@ -97,13 +92,13 @@ void setup() {
     }
   });
   ArduinoOTA.begin();
-  Serial.println("Ver 1 Ready with OTA and Webserver");
+  Serial.println("Ver 3 Ready with OTA and Webserver");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
   // Send web page with input fields to client
   Webserver.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-    request->send_P(200, "text/html", index_html);
+    request->send_P(200, "text/html", index_html, processor);
   });
 
   // Send a GET request to <ESP_IP>/get?input1=<inputMessage>
@@ -118,39 +113,49 @@ void setup() {
       int DCCa = inputMessage.toInt();
       EEPROM.put(0, DCCa);
       EEPROM.commit();
-      ESP.reset();
+      //ESP.reset();
+    }
+    // GET input2 value on <ESP_IP>/get?input2=<inputMessage>
+    else if (request->hasParam(PARAM_INPUT_2)) {
+      inputMessage = request->getParam(PARAM_INPUT_2)->value();
+      inputParam = PARAM_INPUT_2;
+
+      if (inputMessage.startsWith("l") || inputMessage.startsWith("L")) {
+        EEPROM.put(10, 1);
+        CurveDirection = 1;
+      }
+      if (inputMessage.startsWith("r") || inputMessage.startsWith("R")) {
+        EEPROM.put(10, 0);
+        CurveDirection = 0;
+      }
+      EEPROM.commit();
     } else {
       inputMessage = "No message sent";
       inputParam = "none";
     }
     //Serial.println(inputMessage);
     request->send(200, "text/html", "The parameter " + inputParam + " has been set to: " + inputMessage + "<br><a href=\"/\">Return to Home Page</a>");
+    ESP.reset();
   });
   //Webserver.onNotFound(notFound);
   Webserver.begin();
-  aspekt = 0;
-  actualupperwingPos = abs((UpperGo - UpperStop) / 2);
-  actuallowerwingPos = abs((LowerSlow - LowerFull) / 2);
-  if (999 == SigID) {
-    //Motionera vingarna för test
+  EEPROM.get(10, CurveDirection);
+  setPos = 1;
+  if (999 == VxID) {
+    points1.attach(Servo1, 500, 2400);  // attaches the servo on pin D1 to the servo object
+    points1.write(180);
+    delay(3000);
+    points1.write(0);
+    delay(3000);
+    points1.write(180);
+ delay(3000);
+    points1.write(0);
+    delay(3000);
+    points1.write(180);
+delay(3000);
+
+    points1.detach();
   }
-  wing1.attach(D1, 500, 2400);
-  wing1.write(10);
-  delay(3000);
-  wing1.write(60);
-  delay(3000);
-  wing2.attach(D2, 500, 2400);
-  wing2.write(170);
-  delay(3000);
-  wing2.write(160);
-  wing1.detach();
-  wing2.detach();
-
-  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
-  pixels.setPixelColor(1, pixels.Color(0, 150, 0));
-  pixels.setPixelColor(2, pixels.Color(150, 0, 0));
-
-  pixels.show();  // Send the updated pixel colors to the hardware.
 }
 
 void loop() {
@@ -159,13 +164,13 @@ void loop() {
   // if there's data available, red a packet
   int packetSize = Udp.parsePacket();
   if (packetSize) {
-    //Serial.println(packetSize);
+    Serial.println(packetSize);
     int n = Udp.read(UDPincoming, 20);
     UDPincoming[n] = 0;
     Serial.println(UDPincoming);
     char inledning = UDPincoming[0];
     String Inledning(inledning);
-    if (Inledning != "S") {
+    if (Inledning != "T") {
       goto bailout;  // skip if invalid message
     }
     //Separate out id, pos and seq
@@ -174,13 +179,13 @@ void loop() {
     for (int c = 1; c < 9; c++) {
       Sid = Sid + UDPincoming[t];
       t++;
-      if (UDPincoming[t] == ',') {
-        goto faspekt;
+      if (UDPincoming[t] == 'P') {
+        goto fpos;
       }
     }
-faspekt:
+fpos:
     t = t + 1;
-    Saspekt = UDPincoming[t];
+    Spos = UDPincoming[t];
     Seq = "";
     t = t + 2;
     for (int c = 1; c < 9; c++) {
@@ -194,32 +199,19 @@ faspekt:
     }
 qend:
     id = Sid.toInt();
-    aspekt = Saspekt.toInt();
-    
+    pos = Spos.toInt();
   }
 bailout:
   answer = 0;
-  
-  if (SigID == id) {
-    
-    //ställ in rätt aspekt
-    wing1.attach(UpperWing, 500, 2400);  // attach the servo to the servo object
-    wing2.attach(LowerWing, 500, 2400);  // attach the servo to the servo object
+  if (VxID == id) {
+    points1.attach(Servo1, 500, 2400);  // attach the servo to the servo object
+    setPos = pos;
+    if (CurveDirection == 1) setPos = 1 - setPos;
     answer = Seq.toInt();
-    if (0 == aspekt) {
-      setupperwingpos = UpperStop;
-      setlowerwingpos = LowerFull;
-    }
-    if (1 == aspekt) {
-      setupperwingpos = UpperGo;
-      setlowerwingpos = LowerSlow;
-    }
-    if (2 == aspekt) {
-      setupperwingpos = UpperGo;
-      setlowerwingpos = LowerFull;
-    }
-   // Serial.print("Aspekt satt till ");
-    //Serial.println(aspekt);
+    /* Serial.print("id= ");
+    Serial.print(id);
+    Serial.print("  pos= ");
+    Serial.print(pos);*/
     if (answer > 0) {
       // IPAddress broadCast = WiFi.localIP();
       // broadCast[3] = 255;
@@ -227,21 +219,16 @@ bailout:
       //Udp.beginPacket(broadCast, 8888);
       Udp.print(answer);
       Udp.endPacket();
-      //Serial.print("  Skickat svar: ");
-      //Serial.println(answer);
+      Serial.print("  Skickat svar: ");
+      Serial.println(answer);
       answer = 0;
       id = 0;
     }
   }
 
   //Do timebased repetition of points movement
-  if (millis() - 75 >= last25run) {
+  if (millis() - 20 >= last25run) {
     last25run = millis();
     every25ms();
   }
-
-if(WiFi.status() != WL_CONNECTED) {
-    ESP.restart();
-  }
-
 }  // Slut loop
