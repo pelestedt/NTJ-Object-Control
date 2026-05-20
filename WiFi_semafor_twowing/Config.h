@@ -7,10 +7,10 @@
 #define UpperWing D1              //Digital output to control servo
 #define LowerWing D2              //Digital output to control servo
 #define InitialDCCaddress 999  //DCC address assigned to controller by default
-#define UpperStop 65
-#define UpperGo 0
+#define UpperStop 73
+#define UpperGo 9
 #define LowerSlow 120
-#define LowerFull 175
+#define LowerFull 170
 /*
 #define UpperStop 70
 #define UpperGo 0

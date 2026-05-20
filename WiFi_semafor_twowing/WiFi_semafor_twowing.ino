@@ -134,23 +134,83 @@ void setup() {
   if (999 == SigID) {
     //Motionera vingarna för test
   }
-  wing1.attach(D1, 500, 2400);
-  wing1.write(10);
+
+wing1.attach(D1, 500, 2400);
+wing2.attach(D2, 500, 2400);
+wing1.write(UpperStop);
+wing2.write(LowerFull);
+
+
+delay(4000);
+
+for(int v=UpperStop; v>UpperGo; v--){
+delay(70);
+wing1.write(v);
+}
+delay(2000);
+for(int v=UpperGo; v<UpperStop; v++){
+delay(70);
+wing1.write(v);
+}
+delay(2000);
+wing1.attach(D1, 500, 2400);
+wing1.write(UpperStop);
+for(int v=UpperStop; v>UpperGo; v--){
+delay(70);
+wing1.write(v);
+}
+delay(2000);
+
+
+for(int v=LowerFull; v>LowerSlow; v--){
+delay(70);
+wing2.write(v);
+}
+delay(2000);
+for(int v=LowerSlow; v<LowerFull; v++){
+delay(70);
+wing2.write(v);
+}
+delay(2000);
+for(int v=LowerFull; v>LowerSlow; v--){
+delay(70);
+wing2.write(v);
+}
+
+delay(2000);
+for(int v=LowerSlow; v<LowerFull; v++){
+delay(70);
+wing2.write(v);
+}
+
+delay(2000);
+for(int v=UpperGo; v<UpperStop; v++){
+delay(70);
+wing1.write(v);
+}
+
+
+
+/*
+  wing1.write(UpperGo);
   delay(3000);
-  wing1.write(60);
+  wing1.write(UpperStop);
   delay(3000);
   wing2.attach(D2, 500, 2400);
-  wing2.write(170);
-  delay(3000);
-  wing2.write(160);
+  wing2.write(LowerFull);
+  delay(6000);
+  wing2.write(LowerSlow);
+  delay(6000);
+  wing2.write(LowerFull);
+  */
   wing1.detach();
   wing2.detach();
 
-  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
-  pixels.setPixelColor(1, pixels.Color(0, 150, 0));
-  pixels.setPixelColor(2, pixels.Color(150, 0, 0));
+  //pixels.setPixelColor(0, pixels.Color(0, 150, 0));
+ // pixels.setPixelColor(1, pixels.Color(0, 150, 0));
+ // pixels.setPixelColor(2, pixels.Color(150, 0, 0));
 
-  pixels.show();  // Send the updated pixel colors to the hardware.
+ // pixels.show();  // Send the updated pixel colors to the hardware.
 }
 
 void loop() {
