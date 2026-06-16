@@ -16,11 +16,14 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <ESP8266WiFi.h>
+//#include <ESP8266WiFi.h>
+#include <WiFi.h>
+
 #include <WiFiUdp.h>
 #include "Config.h"
 #include <WiFiClient.h>
 #include <ESP8266mDNS.h>  // Include the mDNS library
+
 
 //Main loop declarations
 unsigned long last25run = 0;
