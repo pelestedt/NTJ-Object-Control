@@ -13,6 +13,7 @@ byte sensorport[9]={A0,D1,D2,D3,D4,D5,D6,D7,D8};
 byte SensorID[9]={0,1,2,3,4,5,6,7,8};
 byte currentstatus[9];
 IPAddress bCast;
+unsigned long debounce;
 
 
 

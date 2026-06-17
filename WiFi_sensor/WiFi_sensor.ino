@@ -36,7 +36,7 @@ void setup() {
   Serial.println("");
   Serial.println(Programversion);
   EEPROM.begin(50);
-  
+
   for (byte mem = 1; mem < 9; mem++) {
     EEPROM.get(mem, SensorID[mem]);
   }
@@ -117,8 +117,8 @@ void setup() {
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(1, sensoraddress);
       EEPROM.commit();
-      SensorID[1]=sensoraddress;      
-    } 
+      SensorID[1] = sensoraddress;
+    }
     if (request->hasParam(PARAM_INPUT_2)) {
       inputMessage = request->getParam(PARAM_INPUT_2)->value();
       inputParam = PARAM_INPUT_2;
@@ -126,17 +126,17 @@ void setup() {
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(2, sensoraddress);
       EEPROM.commit();
-       SensorID[2]=sensoraddress;  
-    } 
-if (request->hasParam(PARAM_INPUT_3)) {
+      SensorID[2] = sensoraddress;
+    }
+    if (request->hasParam(PARAM_INPUT_3)) {
       inputMessage = request->getParam(PARAM_INPUT_3)->value();
       inputParam = PARAM_INPUT_3;
       //Add storage in EEprom here
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(3, sensoraddress);
       EEPROM.commit();
-      SensorID[3]=sensoraddress;      
-    } 
+      SensorID[3] = sensoraddress;
+    }
     if (request->hasParam(PARAM_INPUT_4)) {
       inputMessage = request->getParam(PARAM_INPUT_4)->value();
       inputParam = PARAM_INPUT_4;
@@ -144,17 +144,17 @@ if (request->hasParam(PARAM_INPUT_3)) {
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(4, sensoraddress);
       EEPROM.commit();
-       SensorID[4]=sensoraddress;  
-    } 
-if (request->hasParam(PARAM_INPUT_5)) {
+      SensorID[4] = sensoraddress;
+    }
+    if (request->hasParam(PARAM_INPUT_5)) {
       inputMessage = request->getParam(PARAM_INPUT_5)->value();
       inputParam = PARAM_INPUT_5;
       //Add storage in EEprom here
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(5, sensoraddress);
       EEPROM.commit();
-      SensorID[5]=sensoraddress;      
-    } 
+      SensorID[5] = sensoraddress;
+    }
     if (request->hasParam(PARAM_INPUT_6)) {
       inputMessage = request->getParam(PARAM_INPUT_6)->value();
       inputParam = PARAM_INPUT_6;
@@ -162,17 +162,17 @@ if (request->hasParam(PARAM_INPUT_5)) {
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(6, sensoraddress);
       EEPROM.commit();
-       SensorID[6]=sensoraddress;  
-    } 
-if (request->hasParam(PARAM_INPUT_7)) {
+      SensorID[6] = sensoraddress;
+    }
+    if (request->hasParam(PARAM_INPUT_7)) {
       inputMessage = request->getParam(PARAM_INPUT_7)->value();
       inputParam = PARAM_INPUT_7;
       //Add storage in EEprom here
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(7, sensoraddress);
       EEPROM.commit();
-      SensorID[7]=sensoraddress;      
-    } 
+      SensorID[7] = sensoraddress;
+    }
     if (request->hasParam(PARAM_INPUT_8)) {
       inputMessage = request->getParam(PARAM_INPUT_8)->value();
       inputParam = PARAM_INPUT_8;
@@ -180,25 +180,9 @@ if (request->hasParam(PARAM_INPUT_7)) {
       int sensoraddress = inputMessage.toInt();
       EEPROM.put(8, sensoraddress);
       EEPROM.commit();
-       SensorID[8]=sensoraddress;  
-    } 
+      SensorID[8] = sensoraddress;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     else {
       inputMessage = " ";
       inputParam = " ";
@@ -216,19 +200,22 @@ if (request->hasParam(PARAM_INPUT_7)) {
 void loop() {
   ArduinoOTA.handle();
   //Check IO status
-  for (int s = 1; s < 9; s++) {
-    int status = digitalRead(sensorport[s]);
-    status = abs(status - 1);
-    if (status != currentstatus[s]) {
-      currentstatus[s] = status;
-      String sendmsg = 'S' + String(SensorID[s]) + ',' + String(status);
-      //Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-      Udp.beginPacket(bCast, 8888);
-      Udp.print(sendmsg);
-      Udp.endPacket();
-      Serial.print("Skickat: ");
-      Serial.println(sendmsg);
-      sendmsg = 0;
+  if (millis() > debounce + 10) {
+    debounce=millis();
+    for (int s = 1; s < 9; s++) {
+      int status = digitalRead(sensorport[s]);
+      status = abs(status - 1);
+      if (status != currentstatus[s]) {
+        currentstatus[s] = status;
+        String sendmsg = 'S' + String(SensorID[s]) + ',' + String(status);
+        //Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+        Udp.beginPacket(bCast, 8888);
+        Udp.print(sendmsg);
+        Udp.endPacket();
+        Serial.print("Skickat: ");
+        Serial.println(sendmsg);
+        sendmsg = 0;
+      }
     }
   }
 }  // Slut loop
